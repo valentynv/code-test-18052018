@@ -55,33 +55,27 @@ public class BinTreeSerialization {
     }
 
     public static BinTree deserialize(String serialized) throws BinTreeSerializationException {
-        if (serialized == null) throw new BinTreeSerializationException("Cannot deserialize null value");
-        if (serialized.isEmpty()) throw new BinTreeSerializationException("Cannot deserialize empty value");
-
-        // validate
-        Matcher matcher = VALIDATOR.matcher(serialized);
-        if (!matcher.matches()) throw new BinTreeSerializationException("Wrong format!");
-
-        // split string
-        String[] split = serialized.split(SPLITTER);
+        validateSerializedValue(serialized);
 
         // extract parent node
+        String[] split = serialized.split(SPLITTER);
         BinTree result = convertCellToNode(split[0]);
         if (result == null) return null;                  // quick exit if parent node is null
 
         // prepare round variables
         Queue<BinTree> currentParents = new LinkedList<>();
         currentParents.add(result);
-        int globalNodeNumber = 1;       // parent node is first node
 
         // payload
-        while (!currentParents.isEmpty()) {
-            // extract children nodes
+        for (int globalNodeNumber = 1 /*parent node is first node*/; !currentParents.isEmpty(); globalNodeNumber += 2) {
+            // extract left node
             String leftNodeCell = split[globalNodeNumber];
             BinTree leftNode = convertCellToNode(leftNodeCell);
             if (leftNode != null) {
                 currentParents.offer(leftNode);
             }
+
+            // extract right node
             String rightNodeCell = split[globalNodeNumber + 1];
             BinTree rightNode = convertCellToNode(rightNodeCell);
             if (rightNode != null) {
@@ -92,13 +86,19 @@ public class BinTreeSerialization {
             BinTree currentParent = currentParents.poll();
             currentParent.setLeft(leftNode);
             currentParent.setRight(rightNode);
-
-            // prepare next round
-            globalNodeNumber += 2;
         }
 
         // return
         return result;
+    }
+
+    private static void validateSerializedValue(String serialized) throws BinTreeSerializationException {
+        if (serialized == null) throw new BinTreeSerializationException("Cannot deserialize null value");
+        if (serialized.isEmpty()) throw new BinTreeSerializationException("Cannot deserialize empty value");
+
+        // validate
+        Matcher matcher = VALIDATOR.matcher(serialized);
+        if (!matcher.matches()) throw new BinTreeSerializationException("Wrong format!");
     }
 
     private static BinTree convertCellToNode(String cellValue) {
