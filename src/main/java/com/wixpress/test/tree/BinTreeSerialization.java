@@ -19,42 +19,35 @@ public class BinTreeSerialization {
         List<BinTree> serializedNodes = new LinkedList<>();
         Queue<BinTree> queue = new LinkedList<>();
         queue.offer(bintree);
-        Queue<BinTree> nextParents = new LinkedList<>();
 
         // payload
         while (!queue.isEmpty()) {
+            BinTree parent = queue.poll();
 
-            // round
-            for (BinTree parent : queue) {
-                // serialize
-                appendValue(parent, builder);
+            // serialize
+            appendValue(parent, builder);
 
-                // if current parent == null so he doesn't have children
-                if (parent == null) {
-                    continue;
-                }
-
-                // add to already serialized list
-                serializedNodes.add(parent);
-
-                // save as parent left child
-                if (serializedNodes.contains(parent.getLeft())) {
-                    throw new BinTreeSerializationException("Left node was already serialized");
-                } else {
-                    nextParents.offer(parent.getLeft());
-                }
-
-                // save as parent right child
-                if (serializedNodes.contains(parent.getRight())) {
-                    throw new BinTreeSerializationException("Right node was already serialized");
-                } else {
-                    nextParents.offer(parent.getRight());
-                }
+            // if current parent == null so he doesn't have children
+            if (parent == null) {
+                continue;
             }
 
-            // prepare next round
-            queue = nextParents;
-            nextParents = new LinkedList<>();
+            // add to already serialized list
+            serializedNodes.add(parent);
+
+            // save as parent left child
+            if (serializedNodes.contains(parent.getLeft())) {
+                throw new BinTreeSerializationException("Left node was already serialized");
+            } else {
+                queue.offer(parent.getLeft());
+            }
+
+            // save as parent right child
+            if (serializedNodes.contains(parent.getRight())) {
+                throw new BinTreeSerializationException("Right node was already serialized");
+            } else {
+                queue.offer(parent.getRight());
+            }
         }
 
         // return
@@ -74,7 +67,7 @@ public class BinTreeSerialization {
 
         // extract parent node
         BinTree result = convertCellToNode(split[0]);
-        if (result == null) return result;                  // quick exit if parent node is null
+        if (result == null) return null;                  // quick exit if parent node is null
 
         // prepare round variables
         List<BinTree> currentParents = new LinkedList<>();
@@ -87,9 +80,6 @@ public class BinTreeSerialization {
             int parentNumber = currentParents.size();
 
             for (int i = 0; i < parentNumber; i++) {
-                // find current parent
-                BinTree currentParent = currentParents.get(i);
-
                 // start index for left and right nodes
                 int index = globalNodeNumber + i * 2;
 
@@ -106,12 +96,13 @@ public class BinTreeSerialization {
                 }
 
                 // link to parent
+                BinTree currentParent = currentParents.get(i);
                 currentParent.setLeft(leftNode);
                 currentParent.setRight(rightNode);
             }
 
             // prepare next round
-            globalNodeNumber += currentParents.size() * 2;
+            globalNodeNumber += parentNumber * 2;
             currentParents = nextParents;
             nextParents = new LinkedList<>();
         }
@@ -130,7 +121,6 @@ public class BinTreeSerialization {
     }
 
     private static void appendValue(BinTree node, StringBuilder builder) {
-
         if (node == null) {
             builder.append(NULL_CONSTANT);
         } else {
