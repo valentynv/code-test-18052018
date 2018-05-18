@@ -1,9 +1,6 @@
 package com.wixpress.test.tree;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public class BinTreeSerialization {
     private static final String NULL_CONSTANT = "null";
@@ -16,7 +13,7 @@ public class BinTreeSerialization {
 
         // init phase
         StringBuilder builder = new StringBuilder();
-        Set<BinTree> serializedNodes = new HashSet<>();
+        List<BinTree> serializedNodes = new LinkedList<>();
         Queue<BinTree> queue = new LinkedList<>();
         queue.offer(bintree);
         Queue<BinTree> nextParents = new LinkedList<>();
