@@ -9,7 +9,7 @@ public class BinTreeSerialization {
     private static final String OPEN_SYMBOL = "[";
     private static final String CLOSE_SYMBOL = "]";
     private static final String SPLITTER = ",";
-    private static final Pattern VALIDATOR = Pattern.compile("((null,)|(\\[.*\\],))+");
+    private static final Pattern VALIDATOR = Pattern.compile("(((null),)|(\\[(.*)\\],))+");
 
     public static String serialize(BinTree bintree) throws BinTreeSerializationException {
         if (bintree == null) return null;           // TODO: mb no need
@@ -69,9 +69,63 @@ public class BinTreeSerialization {
         Matcher matcher = VALIDATOR.matcher(serialized);
         if (!matcher.matches()) throw new BinTreeSerializationException("Wrong format");
 
-        String[] split = serialized.split(",");
+        // split string
+        String[] split = serialized.split(SPLITTER);
 
-        return null;
+        // extract parent node
+        BinTree result = convertCellToNode(split[0]);
+        if (result == null) return result;                  // quick exit if parent node is null
+
+        // prepare round variables
+        List<BinTree> currentParents = new LinkedList<>();
+        currentParents.add(result);
+        List<BinTree> nextParents = new LinkedList<>();
+        int globalNodeNumber = 1;       // parent node is first node
+
+        // payload
+        while (!currentParents.isEmpty()) {
+            int parentNumber = currentParents.size();
+
+            for (int i = 0; i < parentNumber; i++) {
+                // find current parent
+                BinTree currentParent = currentParents.get(i);
+
+                // init
+                int index = globalNodeNumber + i * 2;
+
+                // extract children nodes
+                String leftNodeCell = split[index];
+                BinTree leftNode = convertCellToNode(leftNodeCell);
+                if (leftNode != null) {
+                    nextParents.add(leftNode);
+                }
+                String rightNodeCell = split[index + 1];
+                BinTree rightNode = convertCellToNode(rightNodeCell);
+                if (rightNode != null) {
+                    nextParents.add(rightNode);
+                }
+
+                // link to parent
+                currentParent.setLeft(leftNode);
+                currentParent.setRight(rightNode);
+            }
+
+            globalNodeNumber += nextParents.size();
+            currentParents = nextParents;
+            nextParents = new LinkedList<>();
+        }
+
+        // return
+        return result;
+    }
+
+    private static BinTree convertCellToNode(String cellValue) {
+        if (cellValue.equals(NULL_CONSTANT)) {
+            return null;
+        } else{
+            String value = cellValue.substring(OPEN_SYMBOL.length(), cellValue.length()  - CLOSE_SYMBOL.length());
+            return new BinTree(value);
+        }
     }
 
     private static void appendValue(BinTree node, StringBuilder builder) {
