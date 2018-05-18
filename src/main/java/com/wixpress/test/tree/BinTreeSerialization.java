@@ -1,15 +1,18 @@
 package com.wixpress.test.tree;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BinTreeSerialization {
     private static final String NULL_CONSTANT = "null";
-    public static final String OPEN_SYMBOL = "[";
-    public static final String CLOSE_SYMBOL = "]";
-    public static final String SPLITTER = ",";
+    private static final String OPEN_SYMBOL = "[";
+    private static final String CLOSE_SYMBOL = "]";
+    private static final String SPLITTER = ",";
+    private static final Pattern VALIDATOR = Pattern.compile("((null,)|(\\[.*\\],))+");
 
     public static String serialize(BinTree bintree) throws BinTreeSerializationException {
-        if (bintree == null) return null;
+        if (bintree == null) return null;           // TODO: mb no need
 
         // init phase
         StringBuilder builder = new StringBuilder();
@@ -56,6 +59,19 @@ public class BinTreeSerialization {
 
         // return
         return builder.toString();
+    }
+
+    public static BinTree deserialize(String serialized) throws BinTreeSerializationException {
+        if (serialized == null) throw new BinTreeSerializationException("Cannot deserialize null value");
+        if (serialized.isEmpty()) throw new BinTreeSerializationException("Cannot deserialize empty value");
+
+        // validate
+        Matcher matcher = VALIDATOR.matcher(serialized);
+        if (!matcher.matches()) throw new BinTreeSerializationException("Wrong format");
+
+        String[] split = serialized.split(",");
+
+        return null;
     }
 
     private static void appendValue(BinTree node, StringBuilder builder) {
