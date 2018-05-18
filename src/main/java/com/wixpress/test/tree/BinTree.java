@@ -1,5 +1,7 @@
 package com.wixpress.test.tree;
 
+import java.util.Objects;
+
 public class BinTree {
     private String value;
     private BinTree left;
@@ -48,6 +50,11 @@ public class BinTree {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(value, left, right);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -68,7 +75,7 @@ public class BinTree {
     ///////////////////////////
 
     public String serialize() throws BinTreeSerializationException {
-        return "";
+        return BinTreeSerialization.serialize(this);
     }
 
     public static BinTree deserialize(String serialized) throws BinTreeSerializationException {
