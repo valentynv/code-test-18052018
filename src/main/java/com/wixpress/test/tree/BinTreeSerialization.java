@@ -90,7 +90,7 @@ public class BinTreeSerialization {
                 // find current parent
                 BinTree currentParent = currentParents.get(i);
 
-                // init
+                // start index for left and right nodes
                 int index = globalNodeNumber + i * 2;
 
                 // extract children nodes
@@ -110,7 +110,8 @@ public class BinTreeSerialization {
                 currentParent.setRight(rightNode);
             }
 
-            globalNodeNumber += nextParents.size();
+            // prepare next round
+            globalNodeNumber += currentParents.size() * 2;
             currentParents = nextParents;
             nextParents = new LinkedList<>();
         }
