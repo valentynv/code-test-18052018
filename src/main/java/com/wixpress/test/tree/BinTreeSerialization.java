@@ -16,7 +16,7 @@ public class BinTreeSerialization {
 
         // init phase
         StringBuilder builder = new StringBuilder();
-        List<BinTree> serializedNodes = new LinkedList<>();
+        Set<BinTree> serializedNodes = new HashSet<>();
         Queue<BinTree> queue = new LinkedList<>();
         queue.offer(bintree);
 
