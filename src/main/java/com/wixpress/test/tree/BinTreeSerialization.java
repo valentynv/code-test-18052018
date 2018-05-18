@@ -60,7 +60,7 @@ public class BinTreeSerialization {
 
         // validate
         Matcher matcher = VALIDATOR.matcher(serialized);
-        if (!matcher.matches()) throw new BinTreeSerializationException("Wrong format");
+        if (!matcher.matches()) throw new BinTreeSerializationException("Wrong format!");
 
         // split string
         String[] split = serialized.split(SPLITTER);
@@ -70,41 +70,31 @@ public class BinTreeSerialization {
         if (result == null) return null;                  // quick exit if parent node is null
 
         // prepare round variables
-        List<BinTree> currentParents = new LinkedList<>();
+        Queue<BinTree> currentParents = new LinkedList<>();
         currentParents.add(result);
-        List<BinTree> nextParents = new LinkedList<>();
         int globalNodeNumber = 1;       // parent node is first node
 
         // payload
         while (!currentParents.isEmpty()) {
-            int parentNumber = currentParents.size();
-
-            for (int i = 0; i < parentNumber; i++) {
-                // start index for left and right nodes
-                int index = globalNodeNumber + i * 2;
-
-                // extract children nodes
-                String leftNodeCell = split[index];
-                BinTree leftNode = convertCellToNode(leftNodeCell);
-                if (leftNode != null) {
-                    nextParents.add(leftNode);
-                }
-                String rightNodeCell = split[index + 1];
-                BinTree rightNode = convertCellToNode(rightNodeCell);
-                if (rightNode != null) {
-                    nextParents.add(rightNode);
-                }
-
-                // link to parent
-                BinTree currentParent = currentParents.get(i);
-                currentParent.setLeft(leftNode);
-                currentParent.setRight(rightNode);
+            // extract children nodes
+            String leftNodeCell = split[globalNodeNumber];
+            BinTree leftNode = convertCellToNode(leftNodeCell);
+            if (leftNode != null) {
+                currentParents.offer(leftNode);
+            }
+            String rightNodeCell = split[globalNodeNumber + 1];
+            BinTree rightNode = convertCellToNode(rightNodeCell);
+            if (rightNode != null) {
+                currentParents.offer(rightNode);
             }
 
+            // link to parent
+            BinTree currentParent = currentParents.poll();
+            currentParent.setLeft(leftNode);
+            currentParent.setRight(rightNode);
+
             // prepare next round
-            globalNodeNumber += parentNumber * 2;
-            currentParents = nextParents;
-            nextParents = new LinkedList<>();
+            globalNodeNumber += 2;
         }
 
         // return
