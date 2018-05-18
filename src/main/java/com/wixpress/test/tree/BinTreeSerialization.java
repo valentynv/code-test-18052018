@@ -5,11 +5,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class BinTreeSerialization {
-    private static final String NULL_CONSTANT = "null";
-    private static final String OPEN_SYMBOL = "[";
-    private static final String CLOSE_SYMBOL = "]";
-    private static final String SPLITTER = ",";
-    private static final Pattern VALIDATOR = Pattern.compile("(((null),)|(\\[(.*)\\],))+");
+    public static final String NULL_CONSTANT = "null";
+    public static final String OPEN_SYMBOL = "[";
+    public static final String CLOSE_SYMBOL = "]";
+    public static final String SPLITTER = ",";
+    private static final Pattern VALIDATOR = Pattern.compile("(((" + NULL_CONSTANT + ")" + SPLITTER + ")|(\\" + OPEN_SYMBOL + "(.*)\\" + CLOSE_SYMBOL + SPLITTER + "))+");
 
     public static String serialize(BinTree bintree) throws BinTreeSerializationException {
         if (bintree == null) return null;           // TODO: mb no need
@@ -123,22 +123,32 @@ public class BinTreeSerialization {
     private static BinTree convertCellToNode(String cellValue) {
         if (cellValue.equals(NULL_CONSTANT)) {
             return null;
-        } else{
-            String value = cellValue.substring(OPEN_SYMBOL.length(), cellValue.length()  - CLOSE_SYMBOL.length());
-            return new BinTree(value);
+        } else {
+            String value = cellValue.substring(OPEN_SYMBOL.length(), cellValue.length() - CLOSE_SYMBOL.length());
+            return new BinTree(unescape(value));
         }
     }
 
     private static void appendValue(BinTree node, StringBuilder builder) {
+
         if (node == null) {
             builder.append(NULL_CONSTANT);
         } else {
             builder.append(OPEN_SYMBOL)
-                    .append(node.getValue())
+                    .append(escape(node.getValue()))
                     .append(CLOSE_SYMBOL);
         }
 
         builder.append(SPLITTER);
+    }
+
+    // TODO: future implementation
+    private static String escape(String value) {
+        return value;
+    }
+
+    private static String unescape(String value) {
+        return value;
     }
 }
 

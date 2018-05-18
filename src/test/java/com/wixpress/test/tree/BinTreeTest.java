@@ -8,6 +8,39 @@ import static junit.framework.Assert.fail;
 public class BinTreeTest {
 
     @Test
+    public void testOneNodeTreeWithOpenCloseSpecialSymbols() throws BinTreeSerializationException {
+        BinTree tree = new BinTree(BinTreeSerialization.OPEN_SYMBOL + BinTreeSerialization.CLOSE_SYMBOL);
+
+        String serialized = tree.serialize();
+        System.out.println(serialized);
+        BinTree tree2 = BinTree.deserialize(serialized);
+
+        assertEquals("tree equals", tree, tree2);
+    }
+
+    @Test
+    public void testOneNodeTreeWithEmptyValue() throws BinTreeSerializationException {
+        BinTree tree = new BinTree("");
+
+        String serialized = tree.serialize();
+        System.out.println(serialized);
+        BinTree tree2 = BinTree.deserialize(serialized);
+
+        assertEquals("tree equals", tree, tree2);
+    }
+
+    @Test
+    public void testOneNodeTreeWithValueNull() throws BinTreeSerializationException {
+        BinTree tree = new BinTree(BinTreeSerialization.NULL_CONSTANT);
+
+        String serialized = tree.serialize();
+        System.out.println(serialized);
+        BinTree tree2 = BinTree.deserialize(serialized);
+
+        assertEquals("tree equals", tree, tree2);
+    }
+
+    @Test
     public void testSimpleCase() throws BinTreeSerializationException {
         BinTree tree = new BinTree("A");
 
